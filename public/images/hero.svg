@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d0f1a"/>
+      <stop offset="100%" stop-color="#13162b"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#glow)"/>
+  <!-- Grid -->
+  <line x1="0" y1="270" x2="1920" y2="270" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  <line x1="0" y1="540" x2="1920" y2="540" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  <line x1="0" y1="810" x2="1920" y2="810" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  <line x1="480" y1="0" x2="480" y2="1080" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  <line x1="960" y1="0" x2="960" y2="1080" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  <line x1="1440" y1="0" x2="1440" y2="1080" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+  <!-- Camera icon -->
+  <rect x="900" y="470" width="120" height="90" rx="12" fill="none" stroke="#c9a84c" stroke-opacity="0.25" stroke-width="2.5"/>
+  <circle cx="960" cy="515" r="24" fill="none" stroke="#c9a84c" stroke-opacity="0.25" stroke-width="2.5"/>
+  <rect x="930" y="463" width="24" height="10" rx="4" fill="#c9a84c" fill-opacity="0.2"/>
+  <!-- Label -->
+  <text x="960" y="600" text-anchor="middle" fill="#c9a84c" fill-opacity="0.45" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">HERO-BILD</text>
+  <text x="960" y="626" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-family="Arial,sans-serif" font-size="14">Ersetzen mit hero.webp — empfohlen 1920×1080</text>
+</svg>

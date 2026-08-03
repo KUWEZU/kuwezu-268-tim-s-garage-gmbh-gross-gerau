@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* ── Brand Design Tokens (Tailwind @theme) ────────────────────────────────── */
+@theme inline {
+  --color-brand-bg:            #0f0f0f;
+  --color-brand-surface:       #1a1a1a;
+  --color-brand-surface2:      #242424;
+  --color-brand-heading:       #f0f0f0;
+  --color-brand-text:          #f0f0f0;
+  --color-brand-muted:         #a0a0a0;
+  --color-brand-border:        rgba(255,255,255,0.08);
+  --color-brand-primary:       #c9a84c;
+  --color-brand-primary-hover: #b8963e;
+  --color-brand-secondary:     #8a7a5a;
+  --color-brand-accent:        #c9a84c;
+
+  /* Text-on-X — nur #000000 oder #FFFFFF */
+  --color-on-primary:     #000000;
+  --color-on-secondary:   #ffffff;
+  --color-on-footer:      #ffffff;
+
+  /* Kontrast-sichere Vordergrundfarben — text-safe-primary etc. */
+  --color-safe-primary:   #c9a84c;
+  --color-safe-secondary: #a0a0a0;
+  --color-safe-icon:      #c9a84c;
+
+  --font-sans: var(--font-geist-sans);
+}
+
+/* ── CSS Custom Properties ────────────────────────────────────────────────── */
+:root {
+  --background:        #0f0f0f;
+  --foreground:        #f0f0f0;
+  --color-page-bg:     #0f0f0f;
+  --color-section-alt: #1a1a1a;
+  --color-card-bg:     #1a1a1a;
+  --color-footer-bg:   #0a0a0a;
+
+  --color-primary:     #c9a84c;
+  --color-secondary:   #8a7a5a;
+
+  --nav-shadow:             0 4px 24px rgba(0,0,0,0.5);
+  --nav-hero-bg:            rgba(0,0,0,0.50);
+  --nav-hero-text:          rgba(255,255,255,0.90);
+  --nav-hero-text-muted:    rgba(255,255,255,0.70);
+  --nav-hero-hover-bg:      rgba(255,255,255,0.10);
+
+  /* Navbar scrolled + Footer — wechselt mit Farbmodus */
+  --nav-scrolled-hover-bg:  rgba(255,255,255,0.08);
+  --nav-scrolled-border:    rgba(255,255,255,0.08);
+
+  --color-modal-bg:         #13162b;
+  --color-modal-bg-hover:   #1a1e35;
+
+  --card-shadow:       none;
+  --hero-overlay:      rgba(0,0,0,0.55);
+
+  --text-on-primary:     #000000;
+  --text-on-footer:      #ffffff;
+  --text-on-hero:        #ffffff;
+
+  --safe-primary-text:   #c9a84c;
+  --safe-secondary-text: #a0a0a0;
+  --safe-icon:           #c9a84c;
+}
+
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[id] { scroll-margin-top: 80px; }
+
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute; top: -100%; left: 1rem; z-index: 9999;
+  background: var(--color-primary); color: #ffffff; font-weight: 700;
+  padding: 0.75rem 1.25rem; border-radius: 0 0 8px 8px; transition: top 0.2s;
+  min-height: 44px; display: inline-flex; align-items: center;
+  text-decoration: none; font-size: 1rem;
+}
+.skip-link:focus { top: 0; }
+
+html.a11y-contrast { filter: invert(1) hue-rotate(180deg); }
+html.a11y-contrast img, html.a11y-contrast video { filter: invert(1) hue-rotate(180deg); }
+html.a11y-no-motion *, html.a11y-no-motion *::before, html.a11y-no-motion *::after {
+  animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+}
+html.a11y-underline-links a { text-decoration: underline !important; text-underline-offset: 3px; }
+
+/* ── Navbar link hover states (eliminates onMouseEnter/Leave JS) ── */
+.nav-link { color: var(--nav-hero-text-muted); opacity: 1; }
+.nav-link:hover { background-color: var(--nav-hero-hover-bg); color: var(--nav-hero-text); }
+header.nav-scrolled .nav-link { color: var(--text-on-footer); opacity: 0.7; }
+header.nav-scrolled .nav-link:hover { background-color: var(--nav-scrolled-hover-bg); color: var(--text-on-footer); opacity: 1; }
+
+/* ── Hero text shadows ── */
+.hero-title-shadow     { text-shadow: 0 2px 20px rgba(0,0,0,0.6); }
+.hero-highlight-shadow { text-shadow: 0 2px 24px rgba(0,0,0,0.9), 0 0 60px rgba(0,0,0,0.5); }
+.hero-text-shadow      { text-shadow: 0 1px 12px rgba(0,0,0,0.6); }
+html.a11y-readable-font, html.a11y-readable-font * {
+  font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.01em;
+}
