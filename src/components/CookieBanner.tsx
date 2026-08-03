@@ -1,192 +1,272 @@
 "use client";
+import { useEffect, useState, useCallback } from "react";
 
-import { useEffect, useState } from "react";
-import { Cookie, X, ChevronDown, ChevronUp } from "lucide-react";
+const STORAGE_KEY = "kuwezu_cookie_consent";
 
-const COOKIE_KEY = "template_cookie_consent";
+type Consent = { necessary: true; maps: boolean; timestamp: number };
 
-type ConsentState = {
-  necessary: true;
-  analytics: boolean;
-  marketing: boolean;
-};
+function loadConsent(): Consent | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as Consent;
+  } catch { return null; }
+}
+
+function saveConsent(maps: boolean) {
+  const c: Consent = { necessary: true, maps, timestamp: Date.now() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(c));
+  // Notify Maps components that may be waiting for consent
+  window.dispatchEvent(new CustomEvent("kuwezu:consent-update", { detail: c }));
+  return c;
+}
 
 export function CookieBanner() {
-  const [visible, setVisible] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [consent, setConsent] = useState<ConsentState>({
-    necessary: true,
-    analytics: false,
-    marketing: false,
-  });
+  const [mounted,       setMounted]       = useState(false);
+  const [visible,       setVisible]       = useState(false);
+  const [closing,       setClosing]       = useState(false);
+  const [settingsOpen,  setSettingsOpen]  = useState(false);
+  const [mapsConsent,   setMapsConsent]   = useState(false);
+  const [hadConsent,    setHadConsent]    = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(COOKIE_KEY);
-      if (!stored) setVisible(true);
-    } catch {
-      setVisible(true);
+    setMounted(true);
+    const existing = loadConsent();
+    if (existing) {
+      setHadConsent(true);
+      setMapsConsent(existing.maps);
+    } else {
+      // Slight delay so layout paints first
+      const t = setTimeout(() => setVisible(true), 120);
+      return () => clearTimeout(t);
     }
   }, []);
 
-  function save(c: ConsentState) {
-    try { localStorage.setItem(COOKIE_KEY, JSON.stringify(c)); } catch { /* ignore */ }
-    setVisible(false);
-  }
+  // Expose re-open hook for footer links: data-kuwezu-cookie-settings attribute
+  useEffect(() => {
+    if (!mounted) return;
+    function handleClick(e: MouseEvent) {
+      const el = (e.target as HTMLElement).closest("[data-kuwezu-cookie-settings]");
+      if (el) { e.preventDefault(); setClosing(false); setVisible(true); }
+    }
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [mounted]);
 
-  function acceptAll() {
-    save({ necessary: true, analytics: true, marketing: true });
-  }
+  const dismiss = useCallback((animate = true) => {
+    if (animate) {
+      setClosing(true);
+      setTimeout(() => { setVisible(false); setClosing(false); }, 200);
+    } else {
+      setVisible(false);
+    }
+  }, []);
 
-  function acceptSelected() {
-    save(consent);
-  }
+  const acceptAll = useCallback(() => {
+    saveConsent(true);
+    setHadConsent(true);
+    dismiss();
+  }, [dismiss]);
 
-  function rejectAll() {
-    save({ necessary: true, analytics: false, marketing: false });
-  }
+  const acceptNecessary = useCallback(() => {
+    saveConsent(false);
+    setHadConsent(true);
+    dismiss();
+  }, [dismiss]);
 
-  if (!visible) return null;
+  const saveCustom = useCallback(() => {
+    saveConsent(mapsConsent);
+    setHadConsent(true);
+    dismiss();
+  }, [mapsConsent, dismiss]);
+
+  if (!mounted || !visible) return null;
 
   return (
-    <div
-      role="dialog"
-      aria-label="Cookie-Einstellungen"
-      aria-modal="true"
-      className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
-    >
-      <div className="max-w-3xl mx-auto bg-[var(--color-modal-bg)] border border-white/[0.12] rounded-2xl shadow-2xl shadow-black/60 overflow-hidden">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-primary/15 border border-brand-primary/30 flex items-center justify-center shrink-0">
-              <Cookie className="w-5 h-5 text-brand-primary" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-white leading-none mb-0.5">
-                Datenschutz-Einstellungen
-              </h2>
-              <p className="text-xs text-white/50">
-                Wir verwenden Cookies, um Ihnen die beste Erfahrung zu bieten.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-5 pb-2">
-          <p className="text-sm text-white/60 leading-relaxed">
-            Diese Website verwendet Cookies und ähnliche Technologien. Notwendige Cookies sind für
-            den Betrieb der Website erforderlich. Weitere Cookies helfen uns, die Website zu verbessern.
-            Ihre Einwilligung können Sie jederzeit widerrufen.{" "}
-            <a href="/datenschutz" className="text-brand-primary hover:underline">
-              Datenschutzerklärung
-            </a>
-          </p>
-        </div>
-
-        {/* Expandable details */}
-        <div className="px-5 pb-3">
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors mt-1"
-          >
-            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            Einstellungen anpassen
-          </button>
-
-          {expanded && (
-            <div className="mt-3 space-y-2">
-              {/* Necessary — always on */}
-              <CookieRow
-                title="Notwendig"
-                description="Essenziell für die Website-Funktionalität. Kann nicht deaktiviert werden."
-                checked={true}
-                disabled
-                onChange={() => {}}
-              />
-              <CookieRow
-                title="Analyse"
-                description="Helfen uns zu verstehen, wie Besucher die Website nutzen (z. B. Google Analytics)."
-                checked={consent.analytics}
-                onChange={(v) => setConsent((c) => ({ ...c, analytics: v }))}
-              />
-              <CookieRow
-                title="Marketing"
-                description="Werden verwendet, um Ihnen relevante Werbung anzuzeigen."
-                checked={consent.marketing}
-                onChange={(v) => setConsent((c) => ({ ...c, marketing: v }))}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-2 px-5 pb-5 pt-2 border-t border-white/[0.06] mt-2">
-          <button
-            type="button"
-            onClick={rejectAll}
-            className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-medium text-white/60 hover:text-white border border-white/[0.10] hover:border-white/[0.20] rounded-xl transition-all"
-          >
-            Nur notwendige
-          </button>
-          {expanded && (
-            <button
-              type="button"
-              onClick={acceptSelected}
-              className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-medium text-brand-primary border border-brand-primary/30 hover:border-brand-primary/60 rounded-xl transition-all"
-            >
-              Auswahl speichern
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={acceptAll}
-            className="flex-1 sm:flex-[2] px-4 py-2.5 text-sm font-semibold bg-brand-primary text-[#0d0f1a] hover:bg-brand-primary-hover rounded-xl transition-all"
-          >
-            Alle akzeptieren
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CookieRow({
-  title,
-  description,
-  checked,
-  disabled,
-  onChange,
-}: {
-  title: string;
-  description: string;
-  checked: boolean;
-  disabled?: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-start gap-3 p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg">
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white leading-none mb-0.5">{title}</p>
-        <p className="text-xs text-white/40 mt-1">{description}</p>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        disabled={disabled}
-        onClick={() => !disabled && onChange(!checked)}
-        className={`mt-0.5 w-9 h-5 rounded-full transition-colors shrink-0 relative ${
-          checked ? "bg-brand-primary" : "bg-white/10"
-        } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+    <>
+      {/* ── Slide-up bar ─────────────────────────────────────────────────── */}
+      <div
+        role="dialog"
+        aria-modal="false"
+        aria-label="Cookie-Einstellungen"
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9999,
+          backgroundColor: "#ffffff",
+          borderTop: "1px solid #e5e7eb",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.10)",
+          animation: closing
+            ? "kuwezu-slide-down 200ms ease-in forwards"
+            : "kuwezu-slide-up 300ms ease-out forwards",
+        }}
       >
-        <div
-          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-            checked ? "translate-x-4" : "translate-x-0.5"
-          }`}
-        />
-      </button>
-    </div>
+        <style>{`
+          @keyframes kuwezu-slide-up {
+            from { transform: translateY(100%); }
+            to   { transform: translateY(0); }
+          }
+          @keyframes kuwezu-slide-down {
+            from { transform: translateY(0); }
+            to   { transform: translateY(100%); }
+          }
+        `}</style>
+
+        <div style={{ maxWidth: 960, margin: "0 auto", padding: "20px 24px 24px" }}>
+
+          {/* Header row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <span style={{ fontSize: 22 }} aria-hidden="true">🍪</span>
+            <span style={{ fontWeight: 700, fontSize: 16, color: "#1a1a1a", flex: 1 }}>
+              Wir verwenden Cookies
+            </span>
+            {hadConsent && (
+              <button
+                onClick={() => dismiss()}
+                aria-label="Schließen"
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "#6b7280", padding: 4, lineHeight: 1,
+                  fontSize: 20, display: "flex", alignItems: "center",
+                }}
+              >×</button>
+            )}
+          </div>
+
+          {/* Description */}
+          <p style={{ fontSize: 14, color: "#4b5563", lineHeight: 1.6, margin: "0 0 8px" }}>
+            Wir verwenden Cookies, um Ihnen die bestmögliche Erfahrung auf unserer Website zu bieten.
+            Einige sind notwendig, andere helfen uns, diese Website und Ihre Erfahrung zu verbessern.
+          </p>
+          <a
+            href="#datenschutz"
+            style={{ fontSize: 13, color: "var(--brand-primary, #1d4ed8)", textDecoration: "underline" }}
+          >
+            Mehr erfahren / Datenschutz
+          </a>
+
+          {/* Expandable categories */}
+          {settingsOpen && (
+            <div style={{ marginTop: 16, borderTop: "1px solid #f3f4f6", paddingTop: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+
+              {/* Necessary — always on */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <div style={{ flexShrink: 0, marginTop: 2 }}>
+                  {/* Toggle: locked */}
+                  <div style={{
+                    width: 40, height: 22, borderRadius: 11,
+                    backgroundColor: "var(--brand-primary, #1d4ed8)",
+                    position: "relative", opacity: 0.6, cursor: "not-allowed",
+                  }}>
+                    <div style={{
+                      position: "absolute", top: 3, right: 3,
+                      width: 16, height: 16, borderRadius: "50%", backgroundColor: "#fff",
+                    }} />
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: "#1a1a1a" }}>Notwendig</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
+                    Erforderlich für die grundlegende Funktionalität der Website. Können nicht deaktiviert werden.
+                  </div>
+                </div>
+              </div>
+
+              {/* Google Maps — toggleable */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <div style={{ flexShrink: 0, marginTop: 2 }}>
+                  <button
+                    role="switch"
+                    aria-checked={mapsConsent}
+                    onClick={() => setMapsConsent((v) => !v)}
+                    style={{
+                      width: 40, height: 22, borderRadius: 11,
+                      backgroundColor: mapsConsent ? "var(--brand-primary, #1d4ed8)" : "#d1d5db",
+                      border: "none", cursor: "pointer", position: "relative",
+                      transition: "background-color 0.2s",
+                    }}
+                  >
+                    <div style={{
+                      position: "absolute", top: 3,
+                      left: mapsConsent ? 21 : 3,
+                      width: 16, height: 16, borderRadius: "50%", backgroundColor: "#fff",
+                      transition: "left 0.2s",
+                    }} />
+                  </button>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: "#1a1a1a" }}>Google Maps</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
+                    Wird verwendet, um interaktive Karten anzuzeigen. Dabei werden Daten an Google übertragen.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Button row */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 18,
+            justifyContent: "flex-end",
+          }}>
+            <button
+              onClick={() => setSettingsOpen((v) => !v)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 13, color: "#6b7280", padding: "0 4px",
+                textDecoration: "underline", marginRight: "auto",
+              }}
+            >
+              {settingsOpen ? "Einstellungen einklappen" : "Einstellungen anpassen"}
+            </button>
+
+            {settingsOpen ? (
+              <button
+                onClick={saveCustom}
+                style={{
+                  padding: "9px 18px", fontSize: 13, fontWeight: 600,
+                  borderRadius: 8, border: "1px solid #e5e7eb",
+                  backgroundColor: "#f3f4f6", color: "#1a1a1a",
+                  cursor: "pointer",
+                }}
+              >
+                Auswahl speichern
+              </button>
+            ) : (
+              <button
+                onClick={acceptNecessary}
+                style={{
+                  padding: "9px 18px", fontSize: 13, fontWeight: 600,
+                  borderRadius: 8, border: "1px solid #e5e7eb",
+                  backgroundColor: "#f3f4f6", color: "#1a1a1a",
+                  cursor: "pointer",
+                }}
+              >
+                Nur Notwendige
+              </button>
+            )}
+
+            <button
+              onClick={acceptAll}
+              style={{
+                padding: "9px 22px", fontSize: 13, fontWeight: 700,
+                borderRadius: 8, border: "none",
+                backgroundColor: "var(--brand-primary, #1d4ed8)",
+                color: "#ffffff", cursor: "pointer",
+              }}
+            >
+              Alle akzeptieren
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </>
   );
 }

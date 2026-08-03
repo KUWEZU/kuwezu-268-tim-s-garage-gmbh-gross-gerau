@@ -10,26 +10,35 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-// Cookie-Consent-Banner standardmäßig AUS (§ 25 TDDDG greift nicht: keine
-// nicht-notwendigen Cookies, kein Dritt-Tracking, lokale Schriften, keine Cookie-Embeds).
-// REAKTIVIEREN, sobald ein einwilligungspflichtiges Feature eingebaut wird (echtes
-// Google-Maps-iframe, Analytics, Meta-Pixel, reCAPTCHA): auf true setzen — Banner
-// erscheint wieder und das Feature MUSS bis zur Einwilligung geblockt bleiben (Opt-in).
+// Cookie-Consent-Banner ist standardmäßig AUS: die Seite setzt keine nicht-notwendigen
+// Cookies, lädt keine Dritt-Tracker, hostet Schriften lokal und bindet keine
+// Cookie-Embeds ein (§ 25 TDDDG greift nicht → kein Banner nötig).
+// REAKTIVIEREN: sobald ein einwilligungspflichtiges Feature eingebaut wird
+// (echtes Google-Maps-iframe, Analytics/GTM, Meta-Pixel, reCAPTCHA), diese Konstante
+// auf true setzen — der Banner erscheint dann wieder und das Feature MUSS bis zur
+// Einwilligung geblockt bleiben (Opt-in). Der CookieBanner bleibt dafür im Repo.
 const COOKIE_CONSENT_REQUIRED: boolean = false;
 
 export const metadata: Metadata = {
-  title: "KUWEZU | Professionelle Kfz-Werkstatt",
-  description: "Ihre Kfz-Werkstatt für alle Leistungen. Qualität und Transparenz.",
+  title: "Tim's Garage GmbH | Autowerkstatt in Groß-Gerau",
+  description: "Tim's Garage GmbH in Groß-Gerau — Ihr Experte für Autoglas, Achsvermessung, Elektroautos und mehr. Jetzt Termin vereinbaren!",
   openGraph: {
-    title: "KUWEZU | Professionelle Kfz-Werkstatt",
-    description: "Ihre zuverlässige Kfz-Werkstatt.",
+    title: "Tim's Garage GmbH | Autowerkstatt in Groß-Gerau",
+    description: "Tim's Garage GmbH in Groß-Gerau — Ihr Experte für Autoglas, Achsvermessung, Elektroautos und mehr. Jetzt Termin vereinbaren!",
     type: "website",
     locale: "de_DE",
   },
   twitter: {
     card: "summary_large_image",
-    title: "KUWEZU | Professionelle Kfz-Werkstatt",
-    description: "Ihre zuverlässige Kfz-Werkstatt.",
+    title: "Tim's Garage GmbH | Autowerkstatt in Groß-Gerau",
+    description: "Tim's Garage GmbH in Groß-Gerau — Ihr Experte für Autoglas, Achsvermessung, Elektroautos und mehr. Jetzt Termin vereinbaren!",
+  },
+  icons: {
+    icon: [
+      { url: "https://r2.kuwezu.de/cdn-cgi/image/width=32,height=32,fit=pad,background=%23ffffff,format=png/konzepte/autofit/autofit_logo.webp", sizes: "32x32", type: "image/png" },
+      { url: "https://r2.kuwezu.de/konzepte/autofit/autofit_logo.webp" },
+    ],
+    apple: [{ url: "https://r2.kuwezu.de/cdn-cgi/image/width=180,height=180,fit=pad,background=%23ffffff,format=png/konzepte/autofit/autofit_logo.webp", sizes: "180x180", type: "image/png" }],
   },
 };
 

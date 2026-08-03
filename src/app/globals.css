@@ -1,72 +1,120 @@
 @import "tailwindcss";
 
-/* ── Brand Design Tokens (Tailwind @theme) ────────────────────────────────── */
+/* ── Brand Design Tokens (Tailwind @theme) ──────────────────────────────────── */
 @theme inline {
-  --color-brand-bg:            #0f0f0f;
-  --color-brand-surface:       #1a1a1a;
-  --color-brand-surface2:      #242424;
-  --color-brand-heading:       #f0f0f0;
+  --color-brand-bg:            #1a1a1a;
+  --color-brand-surface:       #2d2d2d;
+  --color-brand-surface2:      #222222;
+  --color-brand-heading:       #ffffff;
   --color-brand-text:          #f0f0f0;
   --color-brand-muted:         #a0a0a0;
-  --color-brand-border:        rgba(255,255,255,0.08);
-  --color-brand-primary:       #c9a84c;
-  --color-brand-primary-hover: #b8963e;
-  --color-brand-secondary:     #8a7a5a;
-  --color-brand-accent:        #c9a84c;
+  --color-brand-border:        rgba(255,255,255,0.14);
+  --color-brand-primary:       #e30613;
+  --color-brand-primary-hover: #c80511;
+  --color-brand-secondary:     #000000;
+  --color-brand-accent:        #b1b2b3;
 
-  /* Text-on-X — nur #000000 oder #FFFFFF */
-  --color-on-primary:     #000000;
-  --color-on-secondary:   #ffffff;
-  --color-on-footer:      #ffffff;
+  /* Text-on-X Tokens — nur #000000 oder #FFFFFF, via getBestTextColor() berechnet */
+  --color-on-primary:     #FFFFFF;
+  --color-on-secondary:   #FFFFFF;
+  --color-on-accent:      #000000;
+  --color-on-bg:          #FFFFFF;
+  --color-on-section-alt: #FFFFFF;
+  --color-on-card:        #FFFFFF;
+  --color-on-footer:      #FFFFFF;
 
-  /* Kontrast-sichere Vordergrundfarben — text-safe-primary etc. */
-  --color-safe-primary:   #c9a84c;
-  --color-safe-secondary: #a0a0a0;
-  --color-safe-icon:      #c9a84c;
+  /* Kontrast-sichere Vordergrundfarben — Tailwind-Utilities: text-safe-primary etc. */
+  --color-safe-primary:   #ea444e;
+  --color-safe-secondary: #8c8c8c;
+  --color-safe-icon:      #ee6a71;
+
+  /* Icon-Container-Oberflächen — bg-icon-surface / border-icon-ring */
+  --color-icon-surface:   rgba(255,255,255,0.07);
+  --color-icon-ring:      rgba(255,255,255,0.14);
+
+  /* Barrierefreiheits-Widget-Trigger — kontrast-adaptiv (WCAG Non-text ≥3:1 vs pageBg) */
+  --color-a11y-trigger:      #e30613;
+  --color-a11y-trigger-text: #FFFFFF;
 
   --font-sans: var(--font-geist-sans);
 }
 
-/* ── CSS Custom Properties ────────────────────────────────────────────────── */
+/* ── CSS Custom Properties ───────────────────────────────────────────────────── */
 :root {
-  --background:        #0f0f0f;
+  /* Layout */
+  --color-page-bg:     #1a1a1a;
+  --color-section-alt: #222222;
+  --color-card-bg:     #2d2d2d;
+  --color-card-border: rgba(255,255,255,0.14);
+
+  /* Typographie */
+  --color-heading:     #ffffff;
+  --color-text:        #f0f0f0;
+  --color-text-muted:  #a0a0a0;
+
+  /* Markenfarben */
+  --color-primary:     #e30613;
+  --color-secondary:   #000000;
+  --color-accent:      #b1b2b3;
+
+  /* Text-on-X — Template-Komponenten verwenden NUR diese Variablen für Textfarben */
+  --text-on-primary:     #FFFFFF;
+  --text-on-secondary:   #FFFFFF;
+  --text-on-accent:      #000000;
+  --text-on-bg:          #FFFFFF;
+  --text-on-section-alt: #FFFFFF;
+  --text-on-card:        #FFFFFF;
+  --text-on-footer:      #FFFFFF;
+  --text-on-hero:        #ffffff; /* immer weiß — Overlay garantiert ≥7:1 */
+
+  /* Hero-Overlay */
+  --hero-overlay:      rgba(0,0,0,0.55);
+
+  /* Kontrast-sichere Vordergrundfarben (für inline-Style-Nutzung) */
+  --safe-primary-text:   #ea444e;
+  --safe-secondary-text: #8c8c8c;
+  --safe-icon:           #ee6a71;
+
+  /* Icon-Container-Oberflächen (für inline-Style-Nutzung) */
+  --icon-surface: rgba(255,255,255,0.07);
+  --icon-ring:    rgba(255,255,255,0.14);
+
+  /* Rückwärts-Kompatibilität */
+  --background:        #1a1a1a;
   --foreground:        #f0f0f0;
-  --color-page-bg:     #0f0f0f;
-  --color-section-alt: #1a1a1a;
-  --color-card-bg:     #1a1a1a;
-  --color-footer-bg:   #0a0a0a;
 
-  --color-primary:     #c9a84c;
-  --color-secondary:   #8a7a5a;
-
+  /* Navbar non-scrolled */
   --nav-shadow:             0 4px 24px rgba(0,0,0,0.5);
   --nav-hero-bg:            rgba(0,0,0,0.50);
   --nav-hero-text:          rgba(255,255,255,0.90);
   --nav-hero-text-muted:    rgba(255,255,255,0.70);
   --nav-hero-hover-bg:      rgba(255,255,255,0.10);
 
-  /* Navbar scrolled + Footer — wechselt mit Farbmodus */
-  --nav-scrolled-hover-bg:  rgba(255,255,255,0.08);
-  --nav-scrolled-border:    rgba(255,255,255,0.08);
+  /* Navbar scrolled + Footer — gemeinsame Oberfläche */
+  --nav-scrolled-hover-bg:    rgba(255,255,255,0.08);
+  --nav-scrolled-border:      rgba(255,255,255,0.08);
 
-  --color-modal-bg:         #13162b;
-  --color-modal-bg-hover:   #1a1e35;
-
+  /* Cards & Schatten */
   --card-shadow:       none;
-  --hero-overlay:      rgba(0,0,0,0.55);
 
-  --text-on-primary:     #000000;
-  --text-on-footer:      #ffffff;
-  --text-on-hero:        #ffffff;
-
-  --safe-primary-text:   #c9a84c;
-  --safe-secondary-text: #a0a0a0;
-  --safe-icon:           #c9a84c;
+  /* Footer */
+  --color-footer-bg:   #111111;
 }
 
+/* ── Navbar-Logo — Größe + kein weißer Hintergrund-Box ─────────────────────── */
+header img, nav img {
+  background: transparent;
+  height: 72px !important;
+  width: auto !important;
+  max-height: 72px !important;
+  object-fit: contain;
+}
+
+
+/* ── Basis ───────────────────────────────────────────────────────────────────── */
 html, body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--color-page-bg);
+  color: var(--color-text);
   font-size: 1.125rem;
   line-height: 1.6;
   scroll-behavior: smooth;
@@ -76,12 +124,14 @@ html, body {
 
 [id] { scroll-margin-top: 80px; }
 
+/* ── Fokus-Ring (WCAG 2.4.7) ────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: 3px solid var(--safe-primary-text);
   outline-offset: 3px;
   border-radius: 4px;
 }
 
+/* ── Skip-Link (WCAG 2.4.1) ─────────────────────────────────────────────────── */
 .skip-link {
   position: absolute; top: -100%; left: 1rem; z-index: 9999;
   background: var(--color-primary); color: #ffffff; font-weight: 700;
@@ -91,6 +141,7 @@ html, body {
 }
 .skip-link:focus { top: 0; }
 
+/* ── Barrierefreiheits-Modi ──────────────────────────────────────────────────── */
 html.a11y-contrast { filter: invert(1) hue-rotate(180deg); }
 html.a11y-contrast img, html.a11y-contrast video { filter: invert(1) hue-rotate(180deg); }
 html.a11y-no-motion *, html.a11y-no-motion *::before, html.a11y-no-motion *::after {
@@ -98,17 +149,6 @@ html.a11y-no-motion *, html.a11y-no-motion *::before, html.a11y-no-motion *::aft
   transition-duration: 0.01ms !important; scroll-behavior: auto !important;
 }
 html.a11y-underline-links a { text-decoration: underline !important; text-underline-offset: 3px; }
-
-/* ── Navbar link hover states (eliminates onMouseEnter/Leave JS) ── */
-.nav-link { color: var(--nav-hero-text-muted); opacity: 1; }
-.nav-link:hover { background-color: var(--nav-hero-hover-bg); color: var(--nav-hero-text); }
-header.nav-scrolled .nav-link { color: var(--text-on-footer); opacity: 0.7; }
-header.nav-scrolled .nav-link:hover { background-color: var(--nav-scrolled-hover-bg); color: var(--text-on-footer); opacity: 1; }
-
-/* ── Hero text shadows ── */
-.hero-title-shadow     { text-shadow: 0 2px 20px rgba(0,0,0,0.6); }
-.hero-highlight-shadow { text-shadow: 0 2px 24px rgba(0,0,0,0.9), 0 0 60px rgba(0,0,0,0.5); }
-.hero-text-shadow      { text-shadow: 0 1px 12px rgba(0,0,0,0.6); }
 html.a11y-readable-font, html.a11y-readable-font * {
   font-family: Arial, Helvetica, sans-serif !important; letter-spacing: 0.01em;
 }

@@ -1,22 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: __dirname,
-  },
+  output: "export",
+  trailingSlash: true,
   images: {
-    // Lokale SVG-Platzhalter
+    unoptimized: true,   // Required for static export — no server-side image optimization
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // R2 Custom Domain für echte Bilder
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "r2.kuwezu.de",
-        pathname: "/**",
-      },
-    ],
   },
 };
 

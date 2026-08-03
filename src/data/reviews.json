@@ -1,1 +1,39 @@
-{"averageRating":null,"totalCount":0,"source":"Google","fetchedAt":"","reviews":[]}
+{
+  "averageRating": 4.9,
+  "totalCount": 110,
+  "source": "Google",
+  "fetchedAt": "2026-08-03T08:42:48.633Z",
+  "reviews": [
+    {
+      "author": "Sebastian Mörchen",
+      "rating": 5,
+      "text": "Top Werkstatt. Man wird ernst genommen und die Arbeiten werden wie erwartet erledigt. Preis-Leistung stimmt.",
+      "date": "vor einem Monat"
+    },
+    {
+      "author": "le_ mhr",
+      "rating": 1,
+      "text": "Könnte ich 0 Sterne geben, dann würde ich das tun. Wir haben das Auto für eine Inspektion ohne Ölwechsel (der ist erst nächstes Jahr fällig) hingegeben. Die haben uns das Auto nach einem \"Wintercheck\" zurückgegeben. Die hatten keine Ahnung was sie ohne Ölwechsel machen sollen. Bremsenflüssigkeit, Luftfilter, etc. wurden nicht geprüft. Jetzt waren wir bei einer anderen Werkstatt und da wurden einige Mängel festgestellt. Kann Tim's Garage GmbH nicht empfehlen und würde von einem Besuch abraten. Spart man sich Geld....",
+      "date": "vor 5 Monaten"
+    },
+    {
+      "author": "David L",
+      "rating": 5,
+      "text": "Ehrliche Beratung.\nBeim Tim wird mitgedacht, gut informiert und es gibt eine professionelle Reperatur/Service.\n\nIch kann ihn nur empfehlen!",
+      "date": "vor einem Monat"
+    },
+    {
+      "author": "Emil Dürer",
+      "rating": 1,
+      "text": "Inhaber versuchte ein Auto was man nur bis 4.000 Umdrehungen fahren kann, weil es sonst Verbrennungsaussetzer hat schmackhaft zu machen. Das sei ja nicht allzu schlimm, weil man durchaus im niedrigeren Drehzahlbereich fahren kann. Nicht zu empfehlen!",
+      "date": "vor 11 Monaten"
+    },
+    {
+      "author": "Frank Schäfer",
+      "rating": 5,
+      "text": "Am Freitag Termin wegen 4 neuen Winterreifen - die erstmal bestellt werden mussten - gemacht: heute schon alles erledigt!\nTop Team, Top Leistung!! Ich komme wieder!! Ich wünsche euch alles Gute!!\nPS: empfehle euch natürlich weiter!!",
+      "date": "vor 9 Monaten"
+    }
+  ],
+  "_debug": "gmb-import"
+}
